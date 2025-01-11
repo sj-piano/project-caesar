@@ -1,0 +1,9 @@
+[submodule "project_caesar/submodules/ripemd160_python3"]
+	path = project_caesar/submodules/ripemd160_python3
+	url = git@github.com:sj-piano/ripemd160_python3.git
+[submodule "project_caesar/submodules/sha256_python3"]
+	path = project_caesar/submodules/sha256_python3
+	url = git@github.com:sj-piano/sha256_python3.git
+[submodule "project_caesar/submodules/ecdsa_python3"]
+	path = project_caesar/submodules/ecdsa_python3
+	url = git@github.com:sj-piano/ecdsa_python3.git
