@@ -3,5 +3,14 @@
 
 python scripts/script1.py
 
+python scripts/generate_secret_key.py
+
+
+
+
+pytest project_caesar/tests/test_hello_world.py
+
+pytest project_caesar/tests/test_secret_key.py
+
 
 

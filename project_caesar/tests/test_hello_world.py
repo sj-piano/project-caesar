@@ -5,7 +5,6 @@
 
 # Imports
 import pkgutil
-import pytest
 
 
 # Local imports
