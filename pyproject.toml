@@ -1,0 +1,15 @@
+[project]
+name = "project-caesar"
+version = "0.0.1"
+description = "Bitcoin Version 2: Project Caesar"
+authors = [
+  {name = "StJohn Piano", tela = "tela.app/id/stjohn_piano"},
+]
+readme = "README.md"
+license = {file = "LICENSE"}
+
+[project.urls]
+Repository = "https://github.com/sj-piano/project-caesar"
+
+[tool.pytest.ini_options]
+addopts = "--ignore=project_caesar/submodules"

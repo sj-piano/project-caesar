@@ -79,25 +79,25 @@ Tests:
 
 ```
 
-# Run all tests, including submodule tests.
-pytest
+# Run a single test
+pytest project_caesar/tests/test_hello_world.py::test_hello
 
-# Run all tests, excluding submodule tests.
-pytest --ignore=bitcoin_toolset/submodules
+# Allow print statements to work during test
+# - Note: The --capture=no option will also cause print statements _within the test code_ to produce output.
+# - You can also use the -s shortcut.
+pytest project_caesar/tests/test_hello_world.py::test_hello --capture=no
 
 # Run all tests in a specific test file
-pytest bitcoin_toolset/test/test_hello.py
+pytest project_caesar/tests/test_hello_world.py
 
 # Run tests with relatively little output
-pytest --quiet bitcoin_toolset/test/test_hello.py
+pytest --quiet project_caesar/tests/test_hello_world.py
 
-# Run a single test
-pytest bitcoin_toolset/test/test_hello.py::test_hello
+# Run all tests
+pytest
 
-# Print log output in real-time during a single test
-pytest --capture=no --log-cli-level=INFO bitcoin_toolset/test/test_hello.py::test_hello
-
-# Note: The --capture=no option will also cause print statements within the test code to produce output.
+# Run all tests, including submodule tests
+pytest --override-ini addopts="" project_caesar/submodules
 
 ```
 
