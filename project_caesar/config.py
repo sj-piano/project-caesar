@@ -3,23 +3,22 @@ from pydantic import BaseModel, ConfigDict, field_validator
 from typing import Literal
 
 
+# Local imports
+from . import constants
+
+
 # Controls
-# - Users can edit these.
-log_level ='info'
+log_level ='error'
 
 
 # Settings
 repo_dir_name = 'project-caesar'
 
 
-# Constants
-log_level_values = Literal['info', 'debug', 'warning', 'error']
-
-
 class Config(BaseModel):
     model_config = ConfigDict(validate_assignment=True)
 
-    log_level: log_level_values
+    log_level: constants.LogLevelStringEnum
     repo_dir_name: str
 
     @field_validator('repo_dir_name')
@@ -36,9 +35,9 @@ config_dict = {
 
 
 # Validate the config values
-conf = Config(**config_dict)
+config = Config(**config_dict)
 
 
 # You can now import the validated config. E.g.
-# from ..config import conf
+# from ..config import config
 

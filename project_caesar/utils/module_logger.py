@@ -9,15 +9,17 @@ import logging
 # Components
 from enum import Enum
 from typing import Optional
-from pydantic import BaseModel, ConfigDict, Field, validate_call
+from pathlib import Path
+from pydantic import BaseModel, ConfigDict, Field, field_validator, validate_call
 
 
 # Local imports
 from .. import config
+from .. import constants
 from ..utils.misc import stop
 
 
-# Future:
+# Future: Try this for importing colorlog
 #import importlib.util
 #colorlog_imported = importlib.util.find_spec("colorlog") is not None
 
@@ -31,32 +33,11 @@ except Exception as e:
   colorlog_imported = False
 
 
-# Future: Import from constants.py
-
-
-class LogLevelStringEnum(str, Enum):
-    ERROR = "error"
-    WARNING = "warning"
-    INFO = "info"
-    DEBUG = "debug"
-
-
-LOG_LEVEL_STRINGS = [level.value for level in LogLevelStringEnum]
-
-
-# Dynamically generate a mapper dict from the enum and the logging module.
-# Example entry: 'info': logging.INFO
-MAP_LOG_LEVEL_STRING_TO_LEVEL = {
-    level.value: getattr(logging, level.name)
-    for level in LogLevelStringEnum
-}
-
-
 class LoggerConfig(BaseModel):
     model_config = ConfigDict(validate_assignment=True)
 
     logger_name: str = Field(..., description="The name of the logger (usually the path to the module file).")
-    log_level: LogLevelStringEnum = Field(
+    log_level: constants.LogLevelStringEnum = Field(
         config.log_level,
         description="Log level for the logger.",
     )
@@ -64,9 +45,17 @@ class LoggerConfig(BaseModel):
     log_timestamp: Optional[bool] = Field(
         False, description="Include timestamps in log messages."
     )
-    log_file: Optional[str] = Field(
-        None, description="Path to the log file if file logging is specified."
-    )
+    log_file: Optional[Path] = Field(None, description="Path to the log file.")
+
+    @field_validator("log_file")
+    @classmethod
+    def validate_log_file(cls, v: Optional[Path]) -> Optional[Path]:
+        if v:
+            if v.is_dir():
+                raise ValueError(f"Log file path '{v}' is a directory, expected a file.")
+            if not v.parent.exists():
+                raise ValueError(f"Log file directory '{v.parent}' does not exist.")
+        return v
 
     @staticmethod
     def from_defaults(logger_name: str) -> "LoggerConfig":
@@ -112,7 +101,7 @@ def configure_logger(logger: logging.Logger, logger_config: LoggerConfig):
     if logger_config.debug:
         level_str = 'debug'
 
-    level = MAP_LOG_LEVEL_STRING_TO_LEVEL[level_str]
+    level = constants.MAP_LOG_LEVEL_STRING_TO_LEVEL[level_str]
     logger.setLevel(level)
     logger.propagate = False
 
@@ -170,6 +159,6 @@ def configure_logger(logger: logging.Logger, logger_config: LoggerConfig):
 
     # Add convenience method to update log level
     def setLevelStr(level_str: str):
-        logger.setLevel(MAP_LOG_LEVEL_STRING_TO_LEVEL[level_str])
+        logger.setLevel(constants.MAP_LOG_LEVEL_STRING_TO_LEVEL[level_str])
 
     logger.setLevelStr = setLevelStr
