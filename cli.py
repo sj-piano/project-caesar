@@ -1,10 +1,22 @@
 # Local imports
 from project_caesar.code import address, block
+from project_caesar.utils import module_logger
 
 
 # Local components
 from project_caesar.code.genesis import get_genesis_block
 from project_caesar.code.node import Node
+from project_caesar.utils.misc import stop
+
+
+# Logger
+logger, log, deb = module_logger.create_logger(__file__)
+
+
+# Run
+print(logger.log_level)
+log('hello')
+stop()
 
 
 block_0 = get_genesis_block()
