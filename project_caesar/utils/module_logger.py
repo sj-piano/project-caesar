@@ -7,8 +7,7 @@ import logging
 
 
 # Components
-from enum import Enum
-from typing import Optional
+from typing import Callable, Optional, Self, Tuple
 from pathlib import Path
 from pydantic import BaseModel, ConfigDict, Field, field_validator, validate_call
 
@@ -19,24 +18,20 @@ from .. import constants
 from ..utils.misc import stop
 
 
-# Future: Try this for importing colorlog
-#import importlib.util
-#colorlog_imported = importlib.util.find_spec("colorlog") is not None
-
-
-# Non-standard-library imports
+# Dynamically import colorlog if available
+import importlib
+colorlog_spec = importlib.util.find_spec("colorlog")
+colorlog = None
 colorlog_imported = False
-try:
-  import colorlog  # type: ignore
-  colorlog_imported = True
-except Exception as e:
-  colorlog_imported = False
+if colorlog_spec:
+    colorlog = importlib.import_module("colorlog")
+    colorlog_imported = True
 
 
 class LoggerConfig(BaseModel):
     model_config = ConfigDict(validate_assignment=True)
 
-    logger_name: str = Field(..., description="The name of the logger (usually the path to the module file).")
+    logger_name: Optional[str] = Field(None, description="The name of the logger (usually the path to the module file).")
     log_level: constants.LogLevelStringEnum = Field(
         config.log_level,
         description="Log level for the logger.",
@@ -58,13 +53,15 @@ class LoggerConfig(BaseModel):
         return v
 
     @staticmethod
-    def from_defaults(logger_name: str) -> "LoggerConfig":
+    def from_defaults() -> Self:
         """Initialize LoggerConfig using default settings."""
-        return LoggerConfig(logger_name=logger_name)
+        return LoggerConfig()
 
 
 @validate_call
-def create_logger(logger_name: str):
+def create_logger(
+    logger_name: str,
+) -> Tuple[logging.Logger, Callable[..., None], Callable[..., None]]:
     """Create and configure a logger with default settings."""
     # We typically pass in the module file path as the logger name.
     # We try to remove the first part of the path to make the logger name more readable.
@@ -85,7 +82,7 @@ def create_logger(logger_name: str):
         #logger.addHandler(logging.NullHandler())
 
     # Get default config and configure the logger
-    default_config = LoggerConfig.from_defaults(logger_name)
+    default_config = LoggerConfig.from_defaults()
     configure_logger(logger, default_config)
 
     # Return logger and shortcuts
@@ -96,6 +93,11 @@ def create_logger(logger_name: str):
 
 def configure_logger(logger: logging.Logger, logger_config: LoggerConfig):
     """Configure a logger using a LoggerConfig."""
+
+    # Determine the logger name.
+    if logger_config.logger_name:
+        logger.name = logger_config.logger_name
+
     # Determine the log level
     level_str = logger_config.log_level
     if logger_config.debug:
@@ -109,7 +111,7 @@ def configure_logger(logger: logging.Logger, logger_config: LoggerConfig):
     logger.log_level = level_str
 
     # Log format
-    log_format = f"[{logger_config.logger_name}: %(lineno)s (%(funcName)s)] %(message)s"
+    log_format = f"[{logger.name}: %(lineno)s (%(funcName)s)] %(message)s"
     if logger_config.log_timestamp:
         log_format = "%(asctime)s " + log_format
     log_format = f"%(levelname)-8s {log_format}"
@@ -132,8 +134,20 @@ def configure_logger(logger: logging.Logger, logger_config: LoggerConfig):
                 'CRITICAL': 'red,bg_white',
             },
             secondary_log_colors={
-                'baseline': {'DEBUG': 'white', 'INFO': 'white', 'WARNING': 'white', 'ERROR': 'white', 'CRITICAL': 'white'},
-                'message': {'DEBUG': 'blue', 'INFO': 'white', 'WARNING': 'white', 'ERROR': 'white', 'CRITICAL': 'white'},
+                'baseline': {
+                    'DEBUG': 'white',
+                    'INFO': 'white',
+                    'WARNING': 'white',
+                    'ERROR': 'white',
+                    'CRITICAL': 'white'
+                },
+                'message': {
+                    'DEBUG': 'blue',
+                    'INFO': 'white',
+                    'WARNING': 'white',
+                    'ERROR': 'white',
+                    'CRITICAL': 'white',
+                },
             },
         )
 

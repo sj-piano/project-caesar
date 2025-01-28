@@ -1,11 +1,29 @@
 
 
 
+
+## CLI
+
+
+
+
+## Scripts
+
+
 python scripts/script1.py
 
 python scripts/generate_secret_key.py
 
+python scripts/generate_secret_key.py --help
 
+python scripts/generate_secret_key.py --log-level info
+
+python scripts/generate_secret_key.py --log-level info --log-file foo.log
+
+
+
+
+## Tests
 
 
 pytest project_caesar/tests/test_hello_world.py
