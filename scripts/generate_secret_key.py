@@ -15,20 +15,15 @@ parser = argparse.ArgumentParser(
 a = parser.parse_args()
 
 
-# Process arguments
-logger_aspect_names = 'log_level log_file'.split()  # Future: Move to config.
-logger_aspects = {k: a.__dict__.get(k) for k in logger_aspect_names}
-
-
 # Logger
 logger, log, deb = module_logger.create_logger(__file__)
-logger_config = module_logger.LoggerConfig(**logger_aspects)
-module_logger.configure_logger(logger, logger_config)
+module_logger.configure_logger_from_args(logger, a)
 
 
 # Run
 if __name__ == "__main__":
     sk = secret_key.generate_secret_key()
+    deb(f"Args: {a}")
     log(f"Generated secret key: {sk}")
     print(sk.value)
 

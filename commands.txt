@@ -18,7 +18,13 @@ python scripts/generate_secret_key.py --help
 
 python scripts/generate_secret_key.py --log-level info
 
-python scripts/generate_secret_key.py --log-level info --log-file foo.log
+python scripts/generate_secret_key.py --log-level info --debug
+
+python scripts/generate_secret_key.py --log-level info --log-timestamp
+
+python scripts/generate_secret_key.py --log-level info --log-to-file
+
+python scripts/generate_secret_key.py --log-level info --log-to-file --log-file log2.txt
 
 
 

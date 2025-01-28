@@ -2,6 +2,7 @@
 
 
 # Imports
+import argparse
 import os
 import logging
 
@@ -28,6 +29,8 @@ if colorlog_spec:
     colorlog_imported = True
 
 
+
+
 class LoggerConfig(BaseModel):
     model_config = ConfigDict(validate_assignment=True)
 
@@ -39,6 +42,9 @@ class LoggerConfig(BaseModel):
     debug: bool = Field(False, description="Force debug log level.")
     log_timestamp: Optional[bool] = Field(
         False, description="Include timestamps in log messages."
+    )
+    log_to_file: Optional[bool] = Field(
+        False, description="Whether to save log output to a file."
     )
     log_file: Optional[Path] = Field(None, description="Path to the log file.")
 
@@ -56,6 +62,33 @@ class LoggerConfig(BaseModel):
     def from_defaults() -> Self:
         """Initialize LoggerConfig using default settings."""
         return LoggerConfig()
+
+
+
+
+class ArgsModel(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    args: argparse.Namespace
+
+    @field_validator("args")
+    @classmethod
+    def validate_args(cls, v):
+        if not isinstance(v, argparse.Namespace):
+            raise ValueError(f"Expected 'argparse.Namespace', got '{type(v).__name__}'")
+        return v
+
+
+
+
+def configure_logger_from_args(logger, args):
+    """Configure a logger using an argparse namespace."""
+    validated_args = ArgsModel(args=args)
+    args2 = validated_args.args
+    field_names = LoggerConfig.model_fields.keys()
+    fields = {k: args2.__dict__.get(k) for k in field_names}
+    logger_config = LoggerConfig(**fields)
+    configure_logger(logger, logger_config)
 
 
 @validate_call
@@ -164,8 +197,12 @@ def configure_logger(logger: logging.Logger, logger_config: LoggerConfig):
         logger.addHandler(console_handler2)
 
     # Configure file handler if a log file is specified
-    if logger_config.log_file:
-        os.makedirs(os.path.dirname(logger_config.log_file), exist_ok=True)
+    if logger_config.log_to_file and logger_config.log_file:
+        parent_dir = os.path.dirname(logger_config.log_file)
+        # If the log file is in the current directory, parent_dir will be empty string.
+        # Ensure it exists if not empty.
+        if parent_dir:
+            os.makedirs(parent_dir, exist_ok=True)
         file_handler = logging.FileHandler(logger_config.log_file, mode="a", delay=True)
         file_handler.setLevel(level)
         file_handler.setFormatter(log_formatter if not colorlog_imported else log_formatter2)
@@ -176,3 +213,4 @@ def configure_logger(logger: logging.Logger, logger_config: LoggerConfig):
         logger.setLevel(constants.MAP_LOG_LEVEL_STRING_TO_LEVEL[level_str])
 
     logger.setLevelStr = setLevelStr
+
