@@ -2,6 +2,10 @@
 import argparse
 
 
+# Local imports
+from .. import config, constants
+
+
 def get_common_parser():
     """
     Returns an ArgumentParser with common arguments.
@@ -11,11 +15,12 @@ def get_common_parser():
     parser = argparse.ArgumentParser(add_help=False)
 
     parser.add_argument(
-        "--log-level",
+        '--log-level',
+        dest='log_level',
         type=str,
-        default="info",
-        choices=["debug", "info", "warning", "error", "critical"],
-        help="Set the logging level (default: info)",
+        default='info',
+        choices=constants.LOG_LEVEL_NAMES,
+        help="Set the logging level.",
     )
 
     parser.add_argument(
@@ -26,7 +31,7 @@ def get_common_parser():
 
     parser.add_argument(
         "--log-timestamp",
-        action="store_true",
+        action='store_true',
         help="Choose whether to prepend a timestamp to each log line.",
     )
 
@@ -40,7 +45,7 @@ def get_common_parser():
         '--log-file',
         type=str,
         help="The path to the file that log output will be written to.",
-        default='log.txt',
+        default=config.log_file,
     )
 
     return parser

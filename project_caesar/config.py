@@ -1,43 +1,46 @@
 # Components
-from pydantic import BaseModel, ConfigDict, field_validator
-from typing import Literal
+from pydantic import BaseModel, ConfigDict
 
 
 # Local imports
 from . import constants
 
 
-# Controls
+# Defaults
+# - Future: Store in .env file ?
 log_level ='error'
-
-
-# Settings
-repo_dir_name = 'project-caesar'
+debug = False
+log_timestamp = False
+log_to_file = False
+log_file = 'log.txt'
 
 
 class Config(BaseModel):
     model_config = ConfigDict(validate_assignment=True)
 
-    log_level: constants.LogLevelStringEnum
-    repo_dir_name: str
-
-    @field_validator('repo_dir_name')
-    def validate_repo_dir_name(cls, value):
-        if not value.strip():
-            raise ValueError("repo_dir_name cannot be empty or only whitespace.")
-        return value
-
-
-config_dict = {
-    "log_level": log_level,
-    "repo_dir_name": repo_dir_name,
-}
+    log_level: constants.LogLevelNameLiteral
+    debug: bool
+    log_file: str
 
 
 # Validate the config values
-config = Config(**config_dict)
+config_dict = {
+    'log_level': log_level,
+    'debug': debug,
+    'log_file': log_file,
+}
+config_validated = Config(**config_dict)
 
 
 # You can now import the validated config. E.g.
 # from ..config import config
+
+
+def load_args(a):
+    """
+    Load arguments into the config.
+    """
+    log_level = a.log_level
+    debug = a.debug
+    log_file = a.log_file
 

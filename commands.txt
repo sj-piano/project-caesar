@@ -36,13 +36,11 @@ pytest project_caesar/tests/test_hello_world.py
 
 pytest project_caesar/tests/test_hello_world.py::test_hello
 
-pytest --capture=no project_caesar/tests/test_hello_world.py::test_hello_logger
+pytest project_caesar/tests/test_hello_world.py::test_hello_logger --capture=no
 
-pytest --capture=no --log-level=info project_caesar/tests/test_hello_world.py::test_hello_logger
+pytest project_caesar/tests/test_hello_world.py::test_hello_logger --capture=no --log-level=info
 
-pytest --capture=no project_caesar/tests/test_hello_world.py::test_hello_logger --log-level=info
-
-pytest --capture=no --log-cli-level=INFO project_caesar/tests/test_hello_world.py::test_hello_logger
+pytest project_caesar/tests/test_hello_world.py::test_hello --capture=no --log-level=info --log-timestamp
 
 pytest project_caesar/tests/test_secret_key.py
 

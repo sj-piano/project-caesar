@@ -3,6 +3,7 @@ import argparse
 
 
 # Local imports
+from project_caesar import config
 from project_caesar.code import secret_key
 from project_caesar.utils import arguments, module_logger
 
@@ -13,11 +14,12 @@ parser = argparse.ArgumentParser(
     parents=[arguments.get_common_parser()]
 )
 a = parser.parse_args()
+config.load_args(a)
 
 
 # Logger
 logger, log, deb = module_logger.create_logger(__file__)
-module_logger.configure_logger_from_args(logger, a)
+module_logger.configure_all_package_loggers_from_args(a)
 
 
 # Run

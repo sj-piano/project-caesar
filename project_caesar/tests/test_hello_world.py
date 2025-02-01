@@ -9,7 +9,7 @@ import pytest
 
 
 # Local imports
-from project_caesar.code import hello
+from project_caesar.code import hello_world
 from project_caesar.utils import module_logger
 
 
@@ -20,12 +20,12 @@ logger, log, deb = module_logger.create_logger(__file__)
 # Configure logger
 @pytest.fixture(autouse=True, scope='module')
 def setup_logger(pytestconfig):
-    module_logger.configure_logger_from_args(logger, pytestconfig.test_args)
+    module_logger.configure_all_package_loggers_from_args(pytestconfig.test_args)
 
 
 def test_hello():
-    x = hello.hello_world()
-    print(x)
+    x = hello_world.hello_world()
+    print('PRINT:', x)
     assert x == 'hello world'
 
 

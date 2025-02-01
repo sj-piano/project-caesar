@@ -1,25 +1,21 @@
 # Imports
-import logging
 
 
 # Components
-from enum import Enum
+from typing import get_args, Literal
 
 
-class LogLevelStringEnum(str, Enum):
-    ERROR = "error"
-    WARNING = "warning"
-    INFO = "info"
-    DEBUG = "debug"
+# Types
+LogLevelNameLiteral = Literal['debug', 'info', 'warning', 'error', 'critical']
 
 
-LOG_LEVEL_STRINGS = [level.value for level in LogLevelStringEnum]
+# Constants
+REPO_DIR_NAME = 'project-caesar'
+TOP_LEVEL_PACKAGE_DIR_NAME = 'project_caesar'
+SCRIPT_DIR_NAME = 'scripts'
 
 
-# Dynamically generate a mapper dict from the enum and the logging module.
-# Example entry: 'info': logging.INFO
-MAP_LOG_LEVEL_STRING_TO_LEVEL = {
-    level.value: getattr(logging, level.name)
-    for level in LogLevelStringEnum
-}
+# Derived
+LOG_LEVEL_NAMES = list(get_args(LogLevelNameLiteral))
+TOP_LEVEL_DIR_NAMES = [TOP_LEVEL_PACKAGE_DIR_NAME, SCRIPT_DIR_NAME]
 

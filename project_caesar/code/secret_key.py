@@ -4,8 +4,13 @@ import random
 
 
 # Local imports
-from ..submodules import ecdsa_python3 as ecdsa
 from .models.hex_string import HexString
+from ..submodules import ecdsa_python3 as ecdsa
+from ..utils import module_logger
+
+
+# Logger
+logger, log, deb = module_logger.create_logger(__file__)
 
 
 def create_secret_key_toy():
