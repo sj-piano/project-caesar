@@ -1,0 +1,8 @@
+# Python
+
+# Add project root to PYTHONPATH
+# - This allows us to run scripts from the project root.
+# e.g.
+# python3 scripts/script1.py
+export PYTHONPATH=$(pwd):$PYTHONPATH
+
