@@ -103,7 +103,7 @@ def configure_all_package_loggers_from_args(args):
         if start not in constants.TOP_LEVEL_DIR_NAMES:
             continue
         configure_logger(logger, logger_config)
-        msg = f"Logger configured: {logger.name} - {logger.log_level}"
+        msg = f"Logger configured: {logger.name} - level={logger.log_level}"
         #print(msg)
 
 
@@ -161,10 +161,11 @@ def create_logger(
 
     logger = logging.getLogger(logger_name)
 
-    # Add a handler if there isn't one already.
-    # - this NullHandler is only needed to prevent propagation. if we've set propagate to false, maybe this isn't needed ?
-    #if not logger.handlers:
-        #logger.addHandler(logging.NullHandler())
+    # Add a default NullHandler.
+    # This prevents the logger from propagating messages to the root logger.
+    # - Also, it prevents the "No handlers could be found for logger" warning.
+    if not logger.handlers:
+        logger.addHandler(logging.NullHandler())
 
     # Get default config and configure the logger
     default_config = LoggerConfig.from_defaults()
