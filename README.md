@@ -8,11 +8,11 @@ Bitcoin Version 2: Project Caesar
 # Prerequisites
 
 
-Python3
+- [pyenv](https://github.com/pyenv/pyenv)
 
-Python3 virtualenv package
+- Python 3.13.1, installed via pyenv.
 
-direnv
+- [direnv](https://direnv.net)
 
 
 
@@ -20,14 +20,25 @@ direnv
 # Setup
 
 
-```
+Use pyenv to install the required Python.
+
+`pyenv install 3.13.1`
+
+
+Clone the repo and go through setup.
+
+```bash
+
 git clone git@github.com:sj-piano/project-caesar.git
 
 cd project_caesar
 
 direnv allow
 
-python3 -m venv .venv
+pyenv local 3.13.1
+
+# Create a local virtualenv.
+python -m venv .venv
 
 # Add this alias to your .bashrc or .zshrc file.
 alias venv="source .venv/bin/activate"
@@ -35,6 +46,7 @@ alias venv="source .venv/bin/activate"
 venv
 
 pip install -r requirements.txt
+
 ```
 
 
@@ -68,7 +80,7 @@ Scripts:
 
 ```
 
-python3 scripts/script1.py
+python scripts/script1.py
 
 ```
 
