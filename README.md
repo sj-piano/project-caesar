@@ -66,7 +66,7 @@ poetry env info
 # Development
 
 
-## Code Formatting
+## Code Formatting [ignore for now !]
 
 The project uses YAPF for code formatting with custom rules:
 - 4 blank lines around classes

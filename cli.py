@@ -11,6 +11,7 @@ from project_caesar.utils.misc import stop
 
 # Logger
 logger, log, deb = module_logger.create_logger(__file__)
+logger.log_level = 'debug'
 
 
 # Run
@@ -27,6 +28,3 @@ print(block_0.hash)
 
 
 #node = Node()
-
-
-
