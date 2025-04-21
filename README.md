@@ -10,9 +10,18 @@ Bitcoin Version 2: Project Caesar
 
 - [pyenv](https://github.com/pyenv/pyenv)
 
-- Python 3.13.1, installed via pyenv.
+  https://github.com/pyenv/pyenv-installer
 
 - [direnv](https://direnv.net)
+
+  https://direnv.net/docs/installation.html
+
+- [Poetry](https://python-poetry.org/) for Python dependency management
+
+  https://python-poetry.org/docs/#installing-with-the-official-installer
+
+
+- Python 3.13.1, installed via pyenv.
 
 
 
@@ -25,28 +34,64 @@ Use pyenv to install the required Python.
 `pyenv install 3.13.1`
 
 
-Clone the repo and go through setup.
+Clone the repo and set up the environment:
 
 ```bash
-
 git clone git@github.com:sj-piano/project-caesar.git
-
 cd project_caesar
-
 direnv allow
-
 pyenv local 3.13.1
 
-# Create a local virtualenv.
-python -m venv .venv
+# Install dependencies with Poetry
+poetry install
 
-# Add this alias to your .bashrc or .zshrc file.
-alias venv="source .venv/bin/activate"
+# Activate the virtual environment
+# - In future, this will happen automatically via direnv.
+poetry env activate
+```
 
-venv
 
-pip install -r requirements.txt
+Confirm setup:
 
+````
+pyenv local
+poetry show
+which python
+poetry env info
+```
+
+
+
+
+# Development
+
+
+## Code Formatting
+
+The project uses YAPF for code formatting with custom rules:
+- 4 blank lines around classes
+- 2 blank lines around methods
+- 88 character line length
+
+Format code with:
+```bash
+poetry run yapf -i -r .
+```
+
+## Testing
+
+```bash
+# Run a single test
+poetry run pytest project_caesar/tests/test_hello_world.py::test_hello
+
+# Allow print statements to work during test
+poetry run pytest project_caesar/tests/test_hello_world.py::test_hello --capture=no
+
+# Run all tests in a specific test file
+poetry run pytest project_caesar/tests/test_hello_world.py
+
+# Run all tests
+poetry run pytest
 ```
 
 
@@ -59,18 +104,12 @@ pip install -r requirements.txt
 
 CLI:
 
-```
-
-python cli.py
-
-python cli.py --help
-
-python cli.py --task hello
-
-python cli.py --task hello --log-level=info
-
-python cli.py --task get_python_version
-
+```bash
+poetry run python cli.py
+poetry run python cli.py --help
+poetry run python cli.py --task hello
+poetry run python cli.py --task hello --log-level=info
+poetry run python cli.py --task get_python_version
 ```
 
 
@@ -78,40 +117,6 @@ python cli.py --task get_python_version
 
 Scripts:
 
+```bash
+poetry run python scripts/script1.py
 ```
-
-python scripts/script1.py
-
-```
-
-
-
-
-Tests:
-
-```
-
-# Run a single test
-pytest project_caesar/tests/test_hello_world.py::test_hello
-
-# Allow print statements to work during test
-# - Note: The --capture=no option will also cause print statements _within the test code_ to produce output.
-# - You can also use the -s shortcut.
-pytest project_caesar/tests/test_hello_world.py::test_hello --capture=no
-
-# Run all tests in a specific test file
-pytest project_caesar/tests/test_hello_world.py
-
-# Run tests with relatively little output
-pytest --quiet project_caesar/tests/test_hello_world.py
-
-# Run all tests
-pytest
-
-# Run all tests, including submodule tests
-pytest --override-ini addopts="" project_caesar/submodules
-
-```
-
-
-

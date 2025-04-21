@@ -1,15 +1,38 @@
-[project]
+[tool.poetry]
 name = "project-caesar"
 version = "0.0.1"
 description = "Bitcoin Version 2: Project Caesar"
-authors = [
-  {name = "StJohn Piano", tela = "tela.app/id/stjohn_piano"},
-]
+authors = ["StJohn Piano <tela.app/id/stjohn_piano>"]
 readme = "README.md"
-license = {file = "LICENSE"}
+license = "LICENSE"
+repository = "https://github.com/sj-piano/project-caesar"
+packages = [{include = "project_caesar"}]
 
-[project.urls]
-Repository = "https://github.com/sj-piano/project-caesar"
+[tool.poetry.dependencies]
+python = "^3.13.1"
+pydantic = "2.10.5"
+colorlog = "6.9.0"
+typing-extensions = "4.12.2"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "8.3.4"
+hypothesis = "6.31.6"
+pre-commit = "^3.6.0"  # For git hooks
+yapf = "^0.43.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 addopts = "--ignore=project_caesar/submodules"
+
+[tool.yapf]
+# https://github.com/google/yapf
+based_on_style = "pep8"
+column_limit = 120
+dedent_closing_brackets = true
+split_before_first_argument = true
+blank_lines_around_top_level_definition = 4
+BLANK_LINE_BEFORE_CLASS_DOCSTRING = true
+BLANK_LINE_BEFORE_NESTED_CLASS_OR_DEF = true
