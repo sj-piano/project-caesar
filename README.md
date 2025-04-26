@@ -59,10 +59,12 @@ python --version
 which python
 poetry show
 poetry env info
+poetry check
 ```
 
 
 Note: If you're using e.g. VSCode and want to get the path to the Python interpreter, copy the Virtualenv/Path value from the output of `poetry env info`.
+
 
 
 
