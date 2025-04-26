@@ -26,6 +26,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 addopts = "--ignore=project_caesar/submodules"
+testpaths = ["project_caesar/tests"]
 
 [tool.yapf]
 # https://github.com/google/yapf
