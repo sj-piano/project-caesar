@@ -4,7 +4,7 @@ import pytest
 
 
 # Local imports
-from project_caesar import config
+from project_caesar.configuration import config
 
 
 def pytest_addoption(parser):
