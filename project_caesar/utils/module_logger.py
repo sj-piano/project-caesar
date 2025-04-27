@@ -14,9 +14,9 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, validate_cal
 
 
 # Local imports
-from .. import config
-from .. import constants
-from ..utils.misc import stop
+from project_caesar.configuration import config
+from project_caesar import constants
+from project_caesar.utils.misc import stop
 
 
 # Dynamically import colorlog if available
@@ -40,6 +40,8 @@ MAP_LEVEL_TO_LEVEL_NAME = {v: k for k, v in MAP_LEVEL_NAME_TO_LEVEL.items()}
 
 
 class LoggerConfig(BaseModel):
+
+
     model_config = ConfigDict(validate_assignment=True)
 
     logger_name: Optional[str] = Field(None, description="The name of the logger (usually the path to the module file).")
@@ -58,6 +60,7 @@ class LoggerConfig(BaseModel):
     )
     log_file: Optional[Path] = Field(config.log_file, description="Path to the log file.")
 
+
     @field_validator("log_file")
     @classmethod
     def validate_log_file(cls, v: Optional[Path]) -> Optional[Path]:
@@ -68,6 +71,7 @@ class LoggerConfig(BaseModel):
                 raise ValueError(f"Log file directory '{v.parent}' does not exist.")
         return v
 
+
     @staticmethod
     def from_defaults() -> Self:
         """Initialize LoggerConfig using default settings."""
@@ -77,9 +81,12 @@ class LoggerConfig(BaseModel):
 
 
 class ArgsModel(BaseModel):
+
+
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     args: argparse.Namespace
+    
 
     @field_validator("args")
     @classmethod

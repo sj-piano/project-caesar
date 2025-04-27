@@ -3,7 +3,8 @@ import argparse
 
 
 # Local imports
-from .. import config, constants
+from project_caesar.configuration import config
+from project_caesar import constants
 
 
 def get_common_parser():
