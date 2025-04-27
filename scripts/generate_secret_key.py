@@ -3,7 +3,7 @@ import argparse
 
 
 # Local imports
-from project_caesar import config
+from project_caesar.configuration import config
 from project_caesar.code import secret_key
 from project_caesar.utils import arguments, module_logger
 
