@@ -14,7 +14,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, validate_cal
 
 
 # Local imports
-from project_caesar.configuration import config
+from project_caesar.configuration import Config, config as config_default
 from project_caesar import constants
 from project_caesar.utils.misc import stop
 
@@ -46,19 +46,19 @@ class LoggerConfig(BaseModel):
 
     logger_name: Optional[str] = Field(None, description="The name of the logger (usually the path to the module file).")
     log_level: constants.LogLevelNameLiteral = Field(
-        config.log_level,
+        config_default.log_level,
         description="Log level name (lowercase) for the logger.",
     )
-    debug: bool = Field(config.debug, description="Force debug log level.")
+    debug: bool = Field(config_default.debug, description="Force debug log level.")
     log_timestamp: Optional[bool] = Field(
-        config.log_timestamp,
+        config_default.log_timestamp,
         description="Include timestamps in log messages.",
     )
     log_to_file: Optional[bool] = Field(
-        config.log_to_file,
+        config_default.log_to_file,
         description="Whether to save log output to a file.",
     )
-    log_file: Optional[Path] = Field(config.log_file, description="Path to the log file.")
+    log_file: Optional[Path] = Field(config_default.log_file, description="Path to the log file.")
 
 
     @field_validator("log_file")
@@ -78,6 +78,18 @@ class LoggerConfig(BaseModel):
         return LoggerConfig()
 
 
+    @classmethod
+    def from_config(cls, config: Config) -> Self:
+        """Initialize LoggerConfig using a Config object."""
+        return LoggerConfig(
+            log_level=config.log_level,
+            debug=config.debug,
+            log_timestamp=config.log_timestamp,
+            log_to_file=config.log_to_file,
+            log_file=config.log_file,
+        )
+
+
 
 
 class ArgsModel(BaseModel):
@@ -86,7 +98,7 @@ class ArgsModel(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     args: argparse.Namespace
-    
+
 
     @field_validator("args")
     @classmethod
@@ -149,8 +161,23 @@ logging.setLoggerClass(CustomLogger)
 @validate_call
 def create_logger(
     logger_name: str,
+    config: Optional[Config] = None,
+    configure_all: bool = False,
 ) -> Tuple[CustomLogger, Callable[..., None], Callable[..., None]]:
-    """Create and configure a logger with default settings."""
+    """
+    Create and configure a logger with default settings.
+
+    Args:
+        logger_name: The name of the logger (usually the path to the module file)
+        config: Optional Config object to use for logger configuration
+        configure_all: If True, configure all package loggers with this config
+
+    Returns:
+        Tuple of (logger, log, deb) where:
+        - logger is the configured logger
+        - log is a shortcut for logger.info
+        - deb is a shortcut for logger.debug
+    """
     # We pass in the module file path as the logger name.
     # We avoid using the __name__ variable because it is not always the module file path (it can be '__main__').
     # Nonetheless we want to mimic the normal logger name hierarchy.
@@ -174,9 +201,27 @@ def create_logger(
     if not logger.handlers:
         logger.addHandler(logging.NullHandler())
 
-    # Get default config and configure the logger
-    default_config = LoggerConfig.from_defaults()
-    configure_logger(logger, default_config)
+    # Get config and configure the logger
+    if config is None:
+        config = config_default
+
+    # Create a LoggerConfig object from the config.
+    logger_config = LoggerConfig.from_config(config)
+
+    configure_logger(logger, logger_config)
+
+    # Configure all package loggers if requested
+    if configure_all:
+        loggers = [logging.getLogger(name) for name in logging.root.manager.loggerDict]
+        for other_logger in loggers:
+            if not hasattr(other_logger, 'log_level'):
+                continue
+            if other_logger.log_level == 'notset':
+                continue
+            start = other_logger.name.split('.')[0]
+            if start not in constants.TOP_LEVEL_DIR_NAMES:
+                continue
+            configure_logger(other_logger, logger_config)
 
     # Return logger and shortcuts
     log = logger.info
